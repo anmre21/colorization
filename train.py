@@ -75,7 +75,7 @@ print(fixed_y_.shape)
 fig, axes = plt.subplots(2, 2)
 axes = np.reshape(axes, (4, ))
 for i in range(4):
-  example = train_loader.__iter__().__next__()[i].cpu().numpy().transpose((1, 2, 0))
+  example = train_loader.__iter__().__next__()[i].cpu().numpy()
   mean = np.array([0.5, 0.5, 0.5])
   std = np.array([0.5, 0.5, 0.5])
   example = std * example + mean
