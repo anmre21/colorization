@@ -10,7 +10,7 @@ parser.add_argument('--use_gpu', action='store_true', help='whether to use GPU')
 parser.add_argument('-o','--save_prefix', type=str, default='saved', help='will save into this file with {eccv16.png, siggraph17.png} suffixes')
 opt = parser.parse_args()
 
-# load colorizers
+# load colorizers something
 colorizer_eccv16 = eccv16(pretrained=True).eval()
 colorizer_siggraph17 = siggraph17(pretrained=True).eval()
 if(opt.use_gpu):
