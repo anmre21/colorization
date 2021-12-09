@@ -63,7 +63,7 @@ We will first build dataloaders with PyTorch built-in classes.
 """
 
 class Edges2Image(Dataset):
-  def __init__(self, root_dir, split='train', transform=None):
+  def __init__(self, root_dir, split='train'):
     """
     Args:
         root_dir: the directory of the dataset
@@ -71,7 +71,6 @@ class Edges2Image(Dataset):
         transform: pytorch transformations.
     """
 
-    self.transform = transform
     self.files = glob.glob(root_dir + '/*.jpg')
 
   def __len__(self):
@@ -80,21 +79,21 @@ class Edges2Image(Dataset):
   def __getitem__(self, idx):
     img = Image.open(self.files[idx])
     img = np.asarray(img)
-    if self.transform:
-        img = self.transform(img)
-    return img
+    (tens_l_orig, tens_l_rs) = preprocess_img(img, HW=(256,256))
+    tens_l_rs = tens_l_rs.cuda()
+    return tens_l_rs
 
-transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
-])
+# transform = transforms.Compose([
+#         transforms.ToTensor(),
+#         transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+# ])
 
 # tr_dt should be an Edges2Image class containing the training images
 # te_dt should be an Edges2Image class containing the validation images
 # For the train_loader, please use a batch size of 4 and set shuffle to True
 # For the test_loader, please use a batch size of 5 and set shuffle to False
-tr_dt = Edges2Image("mini-edges2shoes/train", split = "train", transform = transform)
-te_dt = Edges2Image("mini-edges2shoes/val", split = "val", transform = transform)
+tr_dt = Edges2Image("mini-edges2shoes/train", split = "train")
+te_dt = Edges2Image("mini-edges2shoes/val", split = "val")
 
 train_loader = DataLoader(tr_dt, batch_size=4, shuffle = True)
 test_loader = DataLoader(te_dt, batch_size=4, shuffle = True)
