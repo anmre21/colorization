@@ -1,4 +1,4 @@
-from .eccv16 import eccv16
+from .colorizers.eccv16 import eccv16
 import time
 import glob as glob
 from PIL import Image
