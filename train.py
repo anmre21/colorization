@@ -31,7 +31,10 @@ class Edges2Image(Dataset):
         split: "train" or "val"
         transform: pytorch transformations.
     """
-
+    self.transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
+    ])
     self.files = glob.glob(root_dir + '/*.jpg')
 
   def __len__(self):
@@ -40,14 +43,8 @@ class Edges2Image(Dataset):
   def __getitem__(self, idx):
     img = Image.open(self.files[idx])
     img = np.asarray(img)
-    if self.transform:
-        img = self.transform(img)
+    img = self.transform(img)
     return img
-
-# transform = transforms.Compose([
-#         transforms.ToTensor(),
-#         transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
-# ])
 
 # tr_dt should be an Edges2Image class containing the training images
 # te_dt should be an Edges2Image class containing the validation images
