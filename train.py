@@ -63,16 +63,20 @@ print('Number of training images {}, number of testing images {}'.format(len(tr_
 # Sample Output used for visualization
 test = test_loader.__iter__().__next__()
 img_size = 256
-fixed_x_ = test[:, :, :, :].cuda()
+fixed_y_ = test[:, :, :, img_size:].cuda()
+fixed_x_ = test[:, :, :, 0:img_size].cuda()
 print(len(train_loader))
 print(len(test_loader))
+print(fixed_y_.shape)
 
 # plot sample image
 fig, axes = plt.subplots(2, 2)
 axes = np.reshape(axes, (4, ))
 for i in range(4):
-  example = train_loader.__iter__().__next__()[i].cpu().numpy()
-  print(example.shape)
+  example = train_loader.__iter__().__next__()[i].numpy().transpose((1, 2, 0))
+  mean = np.array([0.5, 0.5, 0.5])
+  std = np.array([0.5, 0.5, 0.5])
+  example = std * example + mean
   axes[i].imshow(example)
   axes[i].axis('off')
 
