@@ -38,10 +38,11 @@ class Edges2Image(Dataset):
     return len(self.files)
 
   def __getitem__(self, idx):
-    img = load_img(self.files[idx])
-    (tens_l_orig, tens_l_rs) = preprocess_img(img, HW=(256,256))
-    tens_l_rs = tens_l_rs.cuda()
-    return tens_l_rs
+    img = Image.open(self.files[idx])
+    img = np.asarray(img)
+    if self.transform:
+        img = self.transform(img)
+    return img
 
 # transform = transforms.Compose([
 #         transforms.ToTensor(),
@@ -65,17 +66,16 @@ print('Number of training images {}, number of testing images {}'.format(len(tr_
 # Sample Output used for visualization
 test = test_loader.__iter__().__next__()
 img_size = 256
-fixed_y_ = test[:, :, :, img_size:].cuda()
-fixed_x_ = test[:, :, :, 0:img_size].cuda()
+fixed_x_ = test[:, :, :, :].cuda()
 print(len(train_loader))
 print(len(test_loader))
-print(fixed_y_.shape)
 
 # plot sample image
 fig, axes = plt.subplots(2, 2)
 axes = np.reshape(axes, (4, ))
 for i in range(4):
   example = train_loader.__iter__().__next__()[i].cpu().numpy()
+  print(example.shape)
   axes[i].imshow(example)
   axes[i].axis('off')
 
@@ -96,10 +96,11 @@ def train(model, num_epochs = 20):
     num_iter = 0
     for x_ in train_loader:
 
-      y_ = x_[:, :, :, img_size:]
       x_ = x_[:, :, :, 0:img_size]
-      
-      x_, y_ = x_.cuda(), y_.cuda()
+
+      (tens_l_orig, tens_l_rs) = preprocess_img(x_, HW=(256,256))
+      tens_l_rs = tens_l_rs.cuda()
+      x_ = x_.cuda()
 
       #Train the discriminator
       model.zero_grad()
